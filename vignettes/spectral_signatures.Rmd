@@ -1,0 +1,33 @@
+---
+title: "Spectral Signatures using bis620.2023 package"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{spectral_signatures}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+# install()
+library(bis620.2023)
+library(lubridate)
+library(dplyr)
+library(ggplot2)
+
+data(accel)
+t1 = accel$time[5000]
+accel |> 
+  filter((time >= t1) & (time <= t1 + minutes(5))) |>
+  spec_sig(take_log = TRUE) |>
+  filter(freq <= 3) |>
+  plot_accel(x_var = "freq") +
+    theme_bw()
+  
+```
