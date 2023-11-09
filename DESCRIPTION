@@ -1,6 +1,6 @@
 Package: bis620.2023
 Type: Package
-Title: Functions and Data for BIS620
+Title: Functions and Data for this BIS620
 Version: 0.1.0
 Author: Zihan Wang
 Maintainer: The package maintainer <zihan.wang@yale.edu>
