@@ -25,7 +25,7 @@ This is a basic example which shows you how to solve a common problem:
 ``` r
 library(bis620.2023)
 accel |> 
-  head(100) |> 
+  head(1000) |> 
   plot_accel()
 ```
 
