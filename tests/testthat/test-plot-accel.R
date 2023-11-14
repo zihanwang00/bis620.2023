@@ -1,6 +1,6 @@
 test_that("plot_accel() works", {
   data(accel)
-  vdiffr::expect_doppelganger("plot-accel-1",
+  vdiffr::expect_doppelganger("plot-accel-1.new",
                               accel |> head(100) |> plot_accel())
 })
 

@@ -16,6 +16,7 @@ use_roxygen_md(): another package to generate documentation
 Document your data (see 'https://r-pkgs.org/data.html')
 #### Generate documentation for the function
 ```{r}
+library(devtools)
 document() 
 ```
 browse Vignettes for package
@@ -32,12 +33,15 @@ check()
 ```
 ## Testing
 ```{r}
+library(testthat)
+library(usethis)
 use_testthat()
 use_test("hello")
 test()
 ```
 #### report()
 ```{r}
+library(covr)
 report()
 ```
 report() == 100%: for the test, all codes written in the packages has been touched
