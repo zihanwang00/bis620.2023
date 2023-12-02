@@ -16,7 +16,10 @@ Imports:
   dplyr,
   ggplot2,
   tidyr,
-  purrr
+  purrr,
+  DBI,
+  countrycode,
+  rnaturalearth
 Suggests: 
     knitr,
     rmarkdown,
