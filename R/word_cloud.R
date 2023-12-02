@@ -4,7 +4,8 @@
 #' @param condition the condition table with the conditions
 #' @return a word cloud of key words shown in the name of study
 #' @importFrom dplyr inner_join
-#' @importFrom tm Corpus tm_map
+#' @importFrom tm Corpus tm_map VectorSource content_transformer removePunctuation
+#' removeNumbers removeWords stopwords stripWhitespace
 #' @importFrom wordcloud wordcloud
 #' @importFrom RColorBrewer brewer.pal
 #' @export

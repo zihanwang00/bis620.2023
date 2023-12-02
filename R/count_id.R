@@ -3,7 +3,7 @@
 #' @param country the country selected to count number of ID
 #' @param countries the data frame with all countries and IDs
 #' @return the number of ID counts given a specific country
-#' @importFrom dplyr filter group_by summarise rename
+#' @importFrom dplyr filter group_by summarise rename %>%
 #' @export
 
 

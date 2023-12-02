@@ -22,7 +22,13 @@ Imports:
   rnaturalearth,
   wordcloud,
   RColorBrewer,
-  tm
+  tm,
+  shiny,
+  duckdb,
+  graphics,
+  stats,
+  utils,
+  tidyselect
 Suggests: 
     knitr,
     rmarkdown,

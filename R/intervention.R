@@ -2,8 +2,9 @@
 #'
 #' @param interventionType the type of interventions.
 #' @return a plot of top 10 conditions on specific intervention type
-#' @importFrom dplyr filter distinct inner_join select count collect slice_max
+#' @importFrom dplyr filter distinct inner_join select count collect slice_max %>%
 #' @importFrom ggplot2 ggplot aes geom_bar coord_flip labs theme_minimal theme element_text
+#' @importFrom stats reorder
 #' @export
 
 

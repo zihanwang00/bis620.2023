@@ -3,7 +3,8 @@
 #' @param study the studies to get the number of studies trials for.
 #' @param condition the condition table of the trials.
 #' @return values of top 8 frequent number of conditions
-#' @importFrom dplyr inner_join select group_by summarize arrange
+#' @importFrom dplyr inner_join select group_by summarize arrange desc
+#' @importFrom utils head
 #' @export
 
 get_condition_histogram = function(study, condition) {

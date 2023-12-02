@@ -10,7 +10,7 @@
 #' @param match_all should we look for values that match all of the keywords
 #' (intersection) or any of the keywords (union)? (default FALSE; union).
 #' @return a query with the keywords to look for.
-#' @importFrom dplyr filter
+#' @importFrom dplyr filter sql
 #' @export
 
 query_kwds <- function(d, kwds, column, ignore_case = TRUE, match_all = FALSE) {
