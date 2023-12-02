@@ -1,4 +1,4 @@
-# Get top 8 frequent number of conditions by a brief title keyword search and sponsor type
+#' Get top 8 frequent number of conditions by a brief title keyword search and sponsor type
 
 #' @param study the studies to get the number of studies trials for.
 #' @param condition the condition table of the trials.
