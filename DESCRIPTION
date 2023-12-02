@@ -19,7 +19,10 @@ Imports:
   purrr,
   DBI,
   countrycode,
-  rnaturalearth
+  rnaturalearth,
+  wordcloud,
+  RColorBrewer,
+  tm
 Suggests: 
     knitr,
     rmarkdown,
