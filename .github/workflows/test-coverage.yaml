@@ -45,10 +45,7 @@ jobs:
         with:
           extra-packages: any::covr
           needs: coverage
-        
-      - name: Install covr package
-        run: install.packages('covr')
-        shell: Rscript {0}
+      
 
       - name: Test coverage
         run: |
