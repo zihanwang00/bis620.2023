@@ -17,9 +17,11 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/zihanwang00/bis620.2023/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/zihanwang00/bis620.2023/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/zihanwang00/bis620.2023/branch/main/graph/badge.svg)](https://app.codecov.io/gh/zihanwang00/bis620.2023?branch=main)
 <!-- badges: end -->
 
-The goal of bis620.2023 is to ...
+The goal of bis620.2023 is to create a package that allows for the visualization and a platform that facilitates viewers experience with interacting with large and copious amounts of data. It serves to create an interface where viewers can view the distinct features and attributes of the data, specifically comparing to treatment and condition. 
+We apply some of the following operations: creating a world map of trials, creating a condition keyword search, creating an intervention and condition mapping, creating a pie chart for outcomes, having an ID count for individual countries, and finally creating a picture of a word cloud. All of these serve to facilitate the process of processing and visualizing the data more easily as well as making it more interpretable for the viewer to see as well. 
 
 ## Installation
 
