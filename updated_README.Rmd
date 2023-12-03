@@ -52,13 +52,13 @@ accel |>
   head(100) |> 
   plot_accel()
 ```
+
 ```{r}
 library(bis620.2023)
 
-
 con = dbConnect(
   duckdb(
-    file.path("..", "..", "midterms", "data-science-software-systems-main 2", "2023-09-27", "ctgov.duckdb"), 
+    file.path("..", "..", "data", "2023-09-27", "ctgov1.duckdb"),
     read_only = TRUE
   )
 )
@@ -101,8 +101,3 @@ word_cloud(studies, conditions)
 ```
 
 
-
-```{r}
-library(report)
-report()
-```
