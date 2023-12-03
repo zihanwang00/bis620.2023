@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/zihanwang00/bis620.2023/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/zihanwang00/bis620.2023/actions/workflows/R-CMD-check.yaml)
-![test-coverage](https://github.com/zihanwang00/bis620.2023/actions/workflows/test-coverage.yaml/badge.svg)
+[![test-coverage](https://github.com/zihanwang00/bis620.2023/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/zihanwang00/bis620.2023/actions/workflows/test-coverage.yaml)
 <!-- badges: end -->
 
 The goal of bis620.2023 is to create a package that allows for the visualization and a platform that facilitates viewers experience with interacting with large and copious amounts of data. It serves to create an interface where viewers can view the distinct features and attributes of the data, specifically comparing to treatment and condition. 
