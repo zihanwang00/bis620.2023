@@ -44,7 +44,9 @@ accel |>
 ```
 
 
-## Link of Coverage Page
+## Test Coverage Report
+
+You can run the following code to see test report of the package.
 
 ```{r}
 library(covr)

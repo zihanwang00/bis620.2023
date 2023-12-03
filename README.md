@@ -45,7 +45,9 @@ accel |>
 
 <img src="man/figures/README-example-1.png" width="100%" />
 
-## Link of Coverage Page
+## Test Coverage Report
+
+You can run the following code to see test report of the package.
 
 ``` r
 library(covr)
