@@ -9,29 +9,28 @@
 [![test-coverage](https://github.com/zihanwang00/bis620.2023/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/zihanwang00/bis620.2023/actions/workflows/test-coverage.yaml)
 <!-- badges: end -->
 
-
-The goal of bis620.2023 is to create a package that allows for the 
-visualization and a platform that facilitates viewers experience with 
+The goal of bis620.2023 is to create a package that allows for the
+visualization and a platform that facilitates viewers experience with
 interacting with large and copious amounts of data. It serves to create
-an interface where viewers can view the distinct features and 
-attributes of the data, specifically comparing to treatment and 
-condition. We apply some of the following operations: creating a world 
-map of trials, creating a condition keyword search, creating an 
-intervention and condition bar chart, creating a pie chart for outcomes,
-having an ID count for individual countries, and finally creating a 
-picture of a word cloud. Creating a world map of trials allows us to 
-see the distribution of trials across the countries. The intervention 
-and condition keyword search allows viewers to filter and see the brief 
-titles or types of trials that they are interested in. The bar chart of 
-the top 10 conditions allows us to select an intervention type and see 
-a list of conditions that are  associated with studies involving that 
-type of intervention. The pie chart allows us to see the proportion on
-the types of outcomes. The ID count allows us to see the frequency and
-distribution of subjects across each of the countries. The word cloud 
+an interface where viewers can view the distinct features and attributes
+of the data, specifically comparing to treatment and condition. We apply
+some of the following operations: creating a world map of trials,
+creating a condition keyword search, creating an intervention and
+condition bar chart, creating a pie chart for outcomes, having an ID
+count for individual countries, and finally creating a picture of a word
+cloud. Creating a world map of trials allows us to see the distribution
+of trials across the countries. The intervention and condition keyword
+search allows viewers to filter and see the brief titles or types of
+trials that they are interested in. The bar chart of the top 10
+conditions allows us to select an intervention type and see a list of
+conditions that are associated with studies involving that type of
+intervention. The pie chart allows us to see the proportion on the types
+of outcomes. The ID count allows us to see the frequency and
+distribution of subjects across each of the countries. The word cloud
 provides a visual diagram of the frequency of words that appear in the
 study. All of these serve to facilitate the ability of processing and
 visualizing the data more easily as well as making it more interpretable
-for the viewer to see as well. 
+for the viewer to see as well.
 
 ## Installation
 
@@ -53,54 +52,19 @@ accel |>
   head(1000) |> 
   plot_accel()
 ```
+
 <img src="man/figures/README-example-1.png" width="100%" />
 
-```{r}
-library(dplyr)
-unzip("countries.zip")
-countries <- read.csv("filtered_countries.csv")
-head(countries)
+Use function count_country_id to count number of trials in specific
+country
 
-
-countries_df <- data.frame(countries)
-filtered_countries <- countries_df %>%
-  filter(!removed) %>%
-  group_by(name) %>%
-  summarise(n =n()) %>% 
-  rename(ID_count = n)
-names_countries <- filtered_countries$name
-list(names_countries)
-```
-<img src="man/figures/fig3.png" width="100%" />
-<img src="man/figures/fig4.png" width="100%" />
-
-
-```{r}
-count_country_id <- function(country, countries) {
-  countries_df <- data.frame(countries)
-  filtered_countries <- countries_df %>%
-    filter(!removed) %>%
-    group_by(name) %>%
-    summarise(n = n()) %>% 
-    rename(ID_count = n)
-  
-  # Find the row matching the specified country
-  country_row <- filtered_countries %>%
-    filter(name == country)
-  
-  # Print the row (if found)
-  if (nrow(country_row) > 0) {
-    print(country_row)
-  } else {
-    cat("Country not found.")
-  }
-}
-
+``` r
 count_country_id("United States", countries)
-
+#> # A tibble: 1 × 2
+#>   name          ID_count
+#>   <chr>            <int>
+#> 1 United States   167299
 ```
-<img src="man/figures/fig2.png" width="100%" />
-
 
 ## Test Coverage Report
 
@@ -110,4 +74,22 @@ You can run the following code to see test report of the package.
 library(covr)
 report()
 ```
-<img src="man/figures/coverage.png" width="100%" />
+
+``` r
+cov <- package_coverage()
+print(cov)
+#> bis620.2023 Coverage: 6.32%
+#> R/condition_hist.R: 0.00%
+#> R/count_id.R: 0.00%
+#> R/intervention.R: 0.00%
+#> R/map.R: 0.00%
+#> R/phase_hist.R: 0.00%
+#> R/pie.R: 0.00%
+#> R/query.R: 0.00%
+#> R/shiny.R: 0.00%
+#> R/trials.R: 0.00%
+#> R/word_cloud.R: 0.00%
+#> R/spectral.R: 85.71%
+#> R/hello.R: 100.00%
+#> R/plot.R: 100.00%
+```
