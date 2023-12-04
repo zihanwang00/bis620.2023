@@ -61,6 +61,8 @@ names_countries <- filtered_countries$name
 list(names_countries)
 ```
 
+<img src="man/figures/fig2.png" width="100%" />
+
 ```{r}
 count_country_id <- function(country, countries) {
   countries_df <- data.frame(countries)
@@ -85,7 +87,8 @@ count_country_id <- function(country, countries) {
 count_country_id("United States", countries)
 
 ```
-
+<img src="man/figures/fig3.png" width="100%" />
+<img src="man/figures/fig4.png" width="100%" />
 
 ## Test Coverage Report
 
