@@ -55,17 +55,6 @@ accel |>
 
 <img src="man/figures/README-example-1.png" width="100%" />
 
-Use function count_country_id to count number of trials in specific
-country
-
-``` r
-count_country_id("United States", countries)
-#> # A tibble: 1 × 2
-#>   name          ID_count
-#>   <chr>            <int>
-#> 1 United States   167299
-```
-
 ## Test Coverage Report
 
 You can run the following code to see test report of the package.

@@ -43,22 +43,6 @@ accel |>
   plot_accel()
 ```
 
-```{r, include = FALSE}
-library(dplyr)
-filtered_countries <- data.frame(countries) |>
-  filter(!removed) |>
-  group_by(name) |>
-  summarise(n =n()) |>
-  rename(ID_count = n)
-```
-
-Use function count_country_id to count number of trials in specific country
-```{r}
-count_country_id("United States", countries)
-```
-
-
-
 ## Test Coverage Report
 
 You can run the following code to see test report of the package.
