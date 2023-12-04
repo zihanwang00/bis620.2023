@@ -43,6 +43,48 @@ accel |>
   plot_accel()
 ```
 
+```{r}
+library(dplyr)
+unzip("countries.zip")
+countries <- read.csv("filtered_countries.csv")
+head(countries)
+
+
+countries_df <- data.frame(countries)
+filtered_countries <- countries_df %>%
+  filter(!removed) %>%
+  group_by(name) %>%
+  summarise(n =n()) %>% 
+  rename(ID_count = n)
+names_countries <- filtered_countries$name
+list(names_countries)
+```
+
+```{r}
+count_country_id <- function(country, countries) {
+  countries_df <- data.frame(countries)
+  filtered_countries <- countries_df %>%
+    filter(!removed) %>%
+    group_by(name) %>%
+    summarise(n = n()) %>% 
+    rename(ID_count = n)
+  
+  # Find the row matching the specified country
+  country_row <- filtered_countries %>%
+    filter(name == country)
+  
+  # Print the row (if found)
+  if (nrow(country_row) > 0) {
+    print(country_row)
+  } else {
+    cat("Country not found.")
+  }
+}
+
+count_country_id("United States", countries)
+
+```
+
 <img src="man/figures/README-example-1.png" width="100%" />
 
 ## Test Coverage Report
