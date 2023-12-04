@@ -42,6 +42,7 @@ accel |>
   head(1000) |> 
   plot_accel()
 ```
+<img src="man/figures/README-example-1.png" width="100%" />
 
 ```{r}
 library(dplyr)
@@ -85,7 +86,6 @@ count_country_id("United States", countries)
 
 ```
 
-<img src="man/figures/README-example-1.png" width="100%" />
 
 ## Test Coverage Report
 
