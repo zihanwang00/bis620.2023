@@ -23,10 +23,8 @@ suppressPackageStartupMessages(library(ggplot2))
 suppressPackageStartupMessages(library(corrplot))
 suppressPackageStartupMessages(library(survival))
 suppressPackageStartupMessages(library(survminer))
-suppressPackageStartupMessages(library(haven))
 suppressPackageStartupMessages(library(purrr))
 suppressPackageStartupMessages(library(tidyr))
-suppressPackageStartupMessages(library(gtsummary))
 ```
 
 
@@ -48,13 +46,8 @@ ae_sl <- left_join(adae, adsl, by = "SUBJID")
 
 
 ```{r}
-data(adae)
-data(biomark)
-data(adsl)
-
 # survival plot
-ggsurvplot(survfit(Surv(DTHDY, DTH) ~ ATRT, data = ae_sl), 
-           data = ae_sl, conf.int = TRUE)
+swim_plot(ae_sl)
 
 # for numeric variables 
 cor_plot(ae_sl)

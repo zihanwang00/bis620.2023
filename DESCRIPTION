@@ -18,7 +18,9 @@ Imports:
   tidyr,
   purrr,
   corrplot,
-  stats
+  stats,
+  survival,
+  survminer
 Suggests: 
     knitr,
     rmarkdown,
