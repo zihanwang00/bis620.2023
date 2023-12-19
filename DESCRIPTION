@@ -17,18 +17,8 @@ Imports:
   ggplot2,
   tidyr,
   purrr,
-  DBI,
-  countrycode,
-  rnaturalearth,
-  wordcloud,
-  RColorBrewer,
-  tm,
-  shiny,
-  duckdb,
-  graphics,
-  stats,
-  utils,
-  tidyselect
+  corrplot,
+  stats
 Suggests: 
     knitr,
     rmarkdown,
