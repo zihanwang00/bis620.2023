@@ -1,0 +1,229 @@
+---
+title: "Panitumumab Analysis"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Panitumumab Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+# install()
+library(bis620.2023)
+suppressPackageStartupMessages(library(lubridate))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(corrplot))
+suppressPackageStartupMessages(library(survival))
+suppressPackageStartupMessages(library(survminer))
+suppressPackageStartupMessages(library(haven))
+suppressPackageStartupMessages(library(purrr))
+suppressPackageStartupMessages(library(tidyr))
+suppressPackageStartupMessages(library(gtsummary))
+```
+
+
+## Introduction
+
+In this comprehensive data analysis report, we delve into a clinical trial dataset to gain valuable insights into the outcomes and experiences of participants.
+
+In this detailed examination of a clinical trial dataset, we hope to better understand critical facets surrounding toxicities and the impact of KRAS mutations on patient outcomes. To provider fullter detail: toxicities, indicative of severe adverse events often necessitating medication discontinuation, serve as the initial focal point. We hope to shed information on the total occurrences of toxicities, by using data analytic tools such as linear regression models, correlation plots, plotting amongst variables, etc. Simultaneously, we delve into the individual experiences of those affected, scrutinizing factors such as age, gender, and treatment status.
+
+Shifting our focus to the intriguing realm of KRAS mutations, our analysis seeks to validate the hypothesis that patients with mutations in exons 2, 3, and 4 may experience poorer outcomes. This exploration extends to analyses, including linear models evaluating the influence of actual treatments and other variables on patient death, an examination of the correlation between severity levels and treatment outcomes, and a scrutiny of the intricate relationship between biomarkers and patient mortality. As we navigate through these analyses, our goal is to provide extra insights that will not only deepen our understanding of the trial's dynamics but also inform future research and clinical decision-making.
+
+## Analysis1: Actual treatments (ATRT) & other variables as death (DTH) (linear model)
+
+variables: actual treatmemt, patient type, AGE, SEX, B_WEIGHT, B_HEIGHT, RACE (some interactive)
+
+```{r}
+ae_sl <- left_join(adae, adsl, by = "SUBJID")
+```
+
+
+```{r}
+data(adae)
+data(biomark)
+data(adsl)
+
+# survival plot
+ggsurvplot(survfit(Surv(DTHDY, DTH) ~ ATRT, data = ae_sl), 
+           data = ae_sl, conf.int = TRUE)
+
+# for numeric variables 
+cor_plot(ae_sl)
+# for categorical variables
+chi_sq(ae_sl$DTH, ae_sl$PRSURG)
+chi_sq(ae_sl$DTH, ae_sl$SEX)
+chi_sq(ae_sl$DTH, ae_sl$RACE)
+
+# linear model
+dth_lm <- lm_model(ae_sl, DTH ~ -1 + PRSURG + ATRT + AGE + RACE + B_METANM + B_HEIGHT)
+summary(dth_lm)
+
+```
+
+### Survival curve:
+
+The Kaplan-Meier survival curve provided visualizes a comparison between two treatment regimens within a clinical trial: FOLFOX alone and a combination of Panitumumab with FOLFOX. The curve plots survival probability against time in days, with the accompanying shaded areas representing confidence intervals that underscore the uncertainty around the survival estimates.
+
+In the R code accompanying the plot, a multi-step data analysis is laid out. Initially, the code merges two datasets, `adae` and `adsl`, by subject ID, which contain adverse condition data and treatment information respectively for their individual subject ids. Observations from the plot suggest that while survival probabilities for both treatments decrease over time, the initial separation between the curves between the 500-1000 benchmark indicates a potential difference in survival between the two treatment groups, which seems to diminish over time.
+
+### Correlation plot
+
+Correlation plots are generated for numerical variables to discern the relationships amongst variables such as age, body weight, and height. For categorical variables like surgery status, sex, and race, chi-square tests are conducted to assess the association of these factors with patient death.
+
+For the correlation matrix heatmap, which is a graphical representation of the correlation coefficients between pairs of variables in a dataset, we see that each cell in the grid shows the correlation between two variables. The cells are usually colored according to the correlation value indicated by the color scale on the right. The color scale suggests that blues are positive correlations and reds are negative correlations, with darker colors indicating stronger relationships (either positive or negative), and lighter colors indicating weaker relationships.
+
+For the pairs without crosses, the numeric value of the correlation coefficient is provided within the cell. For instance, the variable `AESTDYI` (start day) has a very high positive correlation of 0.9 with `AEENDYI`(end day), which is intuitive as the start and end of an event are often related. Other variables like `DTHDY` show moderate correlations with several variables, showing a relationship of death with those variables.
+
+### Linear Model:
+
+A linear regression model is fitted with death as the outcome variable, influenced by predictors including surgery status, actual treatment, age, race, baseline metastasis number, and baseline height. Our linear model's summary reveals a vast statistical understanding of the factors influencing patient mortality in a clinical trial setting. The residuals suggest that while the model has predictive power, there are outliers and variations that it does not fully capture, with the median skewing slightly positive.
+
+The actual treatment received, particularly the `ATRTPanitumumab + FOLFOX` regimen, also does not demonstrate a statistically significant effect on mortality. This conclusion is drawn from our linear model that p-value for `ATRTPanitumumab + FOLFOX` is 0.38. Given that this p-value exceeds our chosen significance level of 0.05, this might indicate that, within the constraints of this model, the addition of Panitumumab to the FOLFOX regimen does not significantly alter the timing of death compared to other treatments, or that the effect is not detectable within the power of the study.
+
+Age (`AGE`) shows a marginal positive relationship with the timing of death, nearly reaching statistical significance. This implies that older age may be associated with an increased risk of mortality, a finding that aligns with clinical expectations and our intuitions as well.
+
+Racial categorizations present more nuanced results. While `RACEBlack or African American` and `RACEHispanic or Latino` are not statistically significant, the `RACEOther` category shows a strongly significant negative relationship with mortality, suggesting that individuals in this group tend to have later timing of death compared to other races. This finding may prompt a deeper dive into the social, genetic, or environmental factors that contribute to this racial disparity. The most striking result comes from the baseline number of metastases (`B_METANM`), which is a powerful positive predictor of mortality. This indicates that a higher number of metastases at baseline is associated with an earlier timing of death, reinforcing the critical role of tumor burden in patient prognosis.Body height (`B_HEIGHT`) also appears as a significant, albeit less potent, positive predictor. While the clinical relevance of height in this context is not immediately clear, it may serve as a proxy for other physiological variables or as an indicator of tumor growth patterns.
+
+The model's residuals suggest a reasonable spread around the predicted values, though there is a range of under- and over-predictions. The multiple R-squared value of 0.6622 is fairly high for clinical data, suggesting that the model explains a significant portion of the variability in mortality timing. Furthermore, the very low p-value of the F-statistic confirms that the model as a whole has strong predictive power.
+
+In summary, while certain expected factors like age and racial category hold some predictive value regarding mortality, the most compelling evidence points to the number of metastases as a critical determinant. The lack of significance in treatment suggests that, at least within the scope of this analysis, the type of chemotherapy regimen is not a determinant of when death occurs. These insights can help inform both clinical decision-making and future research directions, especially in considering patient characteristics and treatment strategies.
+
+## Analysis 2:
+
+### Severity level (AESEVCD) and treatment (ATRT), death (DTH)
+
+Research question: How do different treatment regimens, FOLFOX alone and Panitumumab combined with FOLFOX, influence death outcomes in patients, considering the severity of adverse events experienced during treatment? Additionally, does the interaction between treatment type and adverse event severity significantly influence the death outcome?
+
+This section looks at the correlation between severity level and actual treatment, and tests if the distribution of death differs on different severity level.
+
+```{r, warning = FALSE}
+treat_hist(ae_sl, "AESEVCD", "ATRT")
+treat_hist(ae_sl, "DTH", "AESEVCD")
+
+# test if two variables are correlated
+chi_sq(ae_sl$AESEVCD, ae_sl$ATRT)
+chi_sq(ae_sl$AESEVCD, ae_sl$DTH)
+
+# for specific severity
+ae_sl %>% 
+  filter(AESEVCD == 4) %>% 
+  treat_hist("DTH", "ATRT")
+
+ae_sl %>% 
+  filter(AESEVCD == 3) %>% 
+  treat_hist("DTH", "ATRT")
+
+# check interactive effects
+dth_lm2 <- lm_model(ae_sl, DTH ~ -1 + ATRT * AESEVCD)
+summary(dth_lm2)
+
+```
+
+### Methods:
+In this part of analysis, we first conducted bar charts for the relationship between treatment types and adverse event severity, as well as between death and adverse event severity. Next, chi-squared tests are utilized in here to explain the correlation between pairs of variables. To be more specific, the association between adverse event severity and treatment type, and between adverse event severity and mortality are conducted here to determine if there is a significant association between two categorical variables. Next, the histograms are used again to visualize the relationship between mortality and treatment type within subsets of severity code of 4 or 3. Lastly, a linear regression model was constructed with mortality (DTH) as the dependent variable and an interaction term between treatment type (ATRT) and adverse event severity (AESEVCD). 
+In summary, we employed the technique of Chi-square test, regression model, and data visualization to test the correlation between severity level and actual treatment and if the distribution of death differs on different severity level.
+
+### Results:
+#### Bar charts of treatment types vs. adverse event severity:
+From the results of our first two bar charts in this section, we can see that there is a noted decrease in the count of adverse events as the severity level increases from 1 to 4 for both treatment types. This trend suggests that while less severe adverse events(severity level1) are more common, the occurrence of more severe adverse events (severity level4) is less frequent in both treatment groups. Plus, the count of each severity for Panitumumab+FOLFOX is greatly larger than for FOLFOX alone. This indicates that the Panitumumab + FOLFOX treatment is associated with a higher overall occurrence of adverse events.
+
+#### Chi-Square test:
+For the Chi-square test between adverse event severity and actual treatment, there is a significant correlation between two variables with p-value of 0.000499750124937531. P-value is less than the significant level of 0.05, so we can conclude that there is a statistically significant association between the severity of adverse events and the type of treatment given. For the Chi-square test between adverse event severity and death outcome, there is no significant correlation between two variables. P-value for this test is larger than 0.05, suggesting that there is no statistically significant association between the severity of adverse events and mortality outcomes. Therrfore, the variation in adverse event severity does not significantly affect mortality rates.
+
+#### Bar charts of specific adverse event severity:
+We plotted the bar charts comparing the death count in patients with adverse event severity level 3 and 4. For level 4, the bar chart shows that the count of deaths among patients is significantly higher in the Panitumumab + FOLFOX treatment group compared to the FOLFOX alone group. Similarly, for severity level 3 adverse events, the bar chart indicates a higher death count in the Panitumumab + FOLFOX group compared to the FOLFOX alone group. These results highlight a potential increase in risk when combining Panitumumab with FOLFOX, particularly in the context of higher severity adverse events. It suggests that treatment of Panitumumab + FOLFOX may be associated with death outcome. 
+
+#### Regression model
+The linear model in this section examine the interactive effects of treatment type and adverse event severity on death. 
+Using the significance level of 0.05, actual treatment of FOLFOX alone is shown to have a statistically significant positive effect on mortality. We can conclude that being on the FOLFOX alone treatment is associated with an increase in the risk of death. The Panitumumab + FOLFOX treatment also shows a statistically significant positive association with mortality, and the effect has higher estimate than FOLFOX alone. This indicates an increased risk of death with this combined treatment.
+The p-value for adverse event severity is just below 0.05 nad has estimate of 0.1, indicating that there is a significant association between the severity of adverse events and mortality, but the effect size is relatively small.
+Lastly, the interaction term between severity level (AESEVCD) and actual treatment (ATRT) did not have a p-value less than 0.05, we can conclude that there is no significant association between the interaction of severity level, actual treatment, and death. 
+In summary, this model indicates that there is a positive association between the severity of adverse events and mortality. Also, both FOLFOX alone and Panitumumab + FOLFOX treatments are significantly associated with increased mortality risk. 
+
+
+## Analysis 3:
+
+### test if biomark is related to DTH, if adding patient types to DTH makes a better prediction
+Research question: How do specific biomarkers, particularly KRAS mutations in exons 2, 3, and 4, relate to mortality outcomes in patients, and does the inclusion of patient types (categorized based on these biomarkers as 'Mutant' and 'Wild-type') enhance the predictive accuracy of mortality models?
+
+It was hypothesized that patients in the study with KRAS mutations in exons 2, 3, and 4 would have poorer outcomes.
+A patient will be considered "Mutant" if there is at least one "Mutant" biomarker in KRAS exons 2, 3, 4. Patients will be considered "Wild-type" if they are not "Mutant" and they have more "Wild-type" markers than "Unknown" or "Failure". (HW2-Q3)
+
+```{r}
+bio <- biomark %>% 
+  clean_biomark()
+```
+
+```{r}
+# exploring biomark types
+long_data <- bio_long(bio)
+bar_plot(long_data, "Type", "Total")
+```
+
+```{r}
+# exploring patient types
+bar_plot(bio %>% count(patient_type) , "patient_type", "n")
+```
+
+```{r}
+all <- left_join(ae_sl, bio, by = "SUBJID")
+                 
+# test if patient type is prognostic with respect to the death outcome
+chi_sq(all$DTH, all$patient_type)
+```
+
+```{r}
+# test if variables are predictive with respect to the death outcome
+dth_lm3 <- lm_model(all, DTH ~ -1 + ATRT + patient_type +  patient_type:ATRT)
+summary(dth_lm3)
+```
+
+```{r}
+dth_lm4 <- lm_model(all, 
+                    DTH ~ -1 + PRSURG + ATRT + AGE + RACE + B_METANM + 
+                      B_HEIGHT + patient_type +  patient_type:ATRT)
+summary(dth_lm4)
+```
+
+### Method:
+
+In this part of analysis, biomarkers data was first cleaned using 'clean_biomark' and transformed into long format using 'bio_long'. We then merged adverse event and survival data(ae_sl), with biomarker data using left join by subject id. We employed a Chi-square test to test the significance of patient type with respect to death.
+
+Further, linear models are constructed to assess the predictive power of our features. The first linear model uses mortality(DTH) as the outcome variable, influenced by predictors including actual treatment(ATRT), patient type(patient_type), and their interaction(patient_type:ATRT). A second linear model is used here to analyze the relationship between mortality (DTH) and various predictors, including prior surgery (PRSURG), treatment type (ATRT), age (AGE), race (RACE), metastasis indicator (B_METANM), height (B_HEIGHT), and patient type (patient_type). The model also includes the interaction between patient type and treatment type (patient_type:ATRT).
+
+Similarly to part I analysis of our report, our linear models reveal a vast statistical understanding of the factors influencing patient mortality in a clinical trial setting.
+
+### Result:
+#### Bar charts of Biomarkers and Patient Types:
+The bar charts provide us visual representations of the distribution of biomarkers types and patient types in our dataset.
+
+The first bar chart shows three types of biomarkers: Mutant, Unknown, and Wild Type. The highest count is observed for Wild Type biomarkers, with approximately 1850 occurrences; the Unknown type has the second-highest count, near 1350; the Mutant type has the lowest count, around 470.
+
+The second bar chart categorizes patients into three types: Failure, Mutant, and Wild Type. Wild Type patients have the highest count, approximately 450; mutant patients are slightly less common than Wild Types, with a count near 400; the category labeled as Failure has the lowest count, around 90. The balance between Mutant and Wild Type patients suggests that there is a good distribution for comparing outcomes based on the presence or absence of KRAS mutations.
+
+Understanding the distribution of these biomarker types and patient types is crucial for our subsequent analyses, helping us to investigate the relationship between biomarker status and patient outcomes.
+
+#### Linear Models:
+The first linear model is utilized to assess how treatment type, patient type, and their interaction predict the death outcome. The coefficient for each variable and interaction term indicates its estimated effect on the death outcome. 'ATRTFOLFOX alone' and 'ATRTPanitumumb + FOLFOX' have very small p-values, which suggest that the effects of these treatment types on death are statistically significant. Thus, these treatments have a measurable impact on mortality. Their sign of coefficients are positive, indicating these treatments are associated with an increase in the risk of death. The p-values for 'patient_typeMutant', 'patient_typeWild_type', 'ATRTPanitumumab + FOLFOX:patient_typeMutant', and 'ATRTPanitumumab + FOLFOX:patient_typeWild_type' are larger than 0.05. The patient type and their interaction terms do not have statistically significant effects on the death outcome within the context of this model. That is, being a 'Mutant' or 'Wild-type' patient, or the interaction of these patient types with the 'ATRTPanitumumab + FOLFOX' treatment, does not significantly alter the likelihood of death compared to the baseline or other categories in the model.
+
+The second linear model reveals that only the factors 'RACEother', 'B_METANM', and the interaction 'ATRTPanitumumab + FOLFOX:patient_typeWild_type' significantly predict mortality, with p-values below 0.05. 'RACEOther' has p-value of 0.002. We observe that this variable's statistically significant negative coefficient indicates that belonging to the 'Other' race category is associated with a lower risk of death compared to the baseline race category in the model. The negative estimate suggests a lower likelihood of mortality for patients categorized under 'RACEother'. 'B_METANM' has a very small p-value, suggesting that the initial count of metastases (B_METANM) strongly and positively predicts mortality. A greater number of metastases present initially correlates with sooner occurrence of death, emphasizing the significant impact of initial tumor burden on patient outcomes. The interaction term between the 'ATRTPanitumumab + FOLFOX' treatment and 'Wild_type' patient category is significant and has a negative coefficient. This suggests that for Wild-type patients, receiving the 'ATRTPanitumumab + FOLFOX' treatment is associated with a reduced risk of death.
+
+In summary, neither of the models showed statistically significant results for the 'patient_typeMutant' and 'patient_typeWild_type' variables, indicating that the biomark types (Mutant or Wild Type) did not significantly impact mortality outcomes. The second model revealed that the interaction between treatment type (specifically 'ATRTPanitumumab + FOLFOX') and patient type ('Wild_type') was significant and had a protective effect on mortality. This indicates that certain treatments may be more effective depending on the patient's biomarker status.Therefore, adding patient types did not significantly improve the prediction of death, but their interaction with specific treatment of 'ATRTPanitumumab + FOLFOX' have meanfuling impact.
+
+
+## Conclusion
+
+In our extensive exploration of a clinical trial dataset, we navigate through multifaceted analyses to uncover pivotal insights into the trial's dynamics and patient outcomes. The investigation begins with an in-depth examination of grade 4 toxicities, as we attempt to understand the total occurrences and individual experiences of affected individuals. Simultaneously, we hope to understand the impact of KRAS mutations on patient outcomes, hypothesizing poorer results for patients with mutations in exons 2, 3, and 4.
+
+The subsequent analyses amplify our understanding, starting with an evaluation of actual treatments and other variables' influence on patient mortality through a linear model. A comprehensive survival curve comparison between FOLFOX alone and the combination of Panitumumab with FOLFOX hints at potential disparities in survival. The correlation plot delves into numerical and categorical variables, offering nuanced insights into relationships and associations. A meticulous linear model underscores critical predictors of mortality, with the number of metastases emerging as a powerful determinant.
+
+Our findings shed light on the intricate interplay between patient characteristics, treatment regimens, and mortality timing. Noteworthy is the lack of significant impact from Panitumumab in the examined regimen, signaling its limited influence on mortality timing. Throughout our research project in the class, our aim is to furnish clinicians and researchers with actionable insights, enabling informed decision-making and shaping the trajectory of future investigations.
