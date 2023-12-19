@@ -1,0 +1,145 @@
+---
+title: "Panitumumab Analysis"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Panitumumab Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+# lecture 10.23
+
+# install()
+library(bis620.2023)
+library(lubridate)
+library(dplyr)
+library(ggplot2)
+
+# data(accel)
+# t1 = accel$time[5000]
+# accel |> 
+#   filter((time >= t1) & (time <= t1 + minutes(5))) |>
+#   spec_sig(take_log = TRUE) |>
+#   filter(freq <= 3) |>
+#   plot_accel(x_var = "freq") +
+#     theme_bw()
+#   
+```
+
+## Introduction
+
+
+## Analysis1: Actual treatments(ATRT) & other variables as death (DTH) (linear model)
+variables: actual treatmemt, patient type, AGE, SEX, B_WEIGHT, B_HEIGHT, RACE (some interactive)
+```{r}
+ae_sl <- left_join(adae, adsl, by = "SUBJID")
+```
+
+
+```{r}
+library(corrplot)
+library(survival)
+library(survminer)
+data(adae)
+data(biomark)
+data(adsl)
+
+# survival plot
+ggsurvplot(survfit(Surv(DTHDY, DTH) ~ ATRT, data = ae_sl), 
+           data = ae_sl, conf.int = TRUE)
+
+# for numeric variables 
+cor_plot(ae_sl)
+# for categorical variables
+chi_sq(ae_sl$DTH, ae_sl$PRSURG)
+chi_sq(ae_sl$DTH, ae_sl$SEX)
+chi_sq(ae_sl$DTH, ae_sl$RACE)
+
+# linear model
+dth_lm <- lm_model(ae_sl, DTH ~ -1 + PRSURG + ATRT + AGE + RACE + B_METANM + B_HEIGHT)
+summary(dth_lm)
+
+```
+
+## Severity level (AESEVCD) and treatment (ATRT), death (DTH)
+Want to look at the correlation between severity level and actual treatment & if distribution of death differs on different severity level
+```{r, warning = FALSE}
+treat_hist(ae_sl, "AESEVCD", "ATRT")
+treat_hist(ae_sl, "DTH", "AESEVCD")
+
+# test if two variables are correlated
+chi_sq(ae_sl$AESEVCD, ae_sl$ATRT)
+chi_sq(ae_sl$AESEVCD, ae_sl$DTH)
+
+# for specific severity
+ae_sl %>% 
+  filter(AESEVCD == 4) %>% 
+  treat_hist("DTH", "ATRT")
+
+ae_sl %>% 
+  filter(AESEVCD == 3) %>% 
+  treat_hist("DTH", "ATRT")
+
+# check interactive effects
+dth_lm2 <- lm_model(ae_sl, DTH ~ -1 + ATRT * AESEVCD)
+summary(dth_lm2)
+
+```
+
+## test if biomark is related to DTH, if adding patient types to DTH makes a better prediction
+
+It was hypothesized that patients in the study with KRAS mutations in exons 2, 3, and 4 would have poorer outcomes.
+
+A patient will be considered “Mutant” if there is at least one “Mutant” biomarker in KRAS exons 2, 3, 4. Patients will be considered “Wild-type” if they are not “Mutant” and they have more “Wild-type” markers than “Unknown” or “Failure”. (HW2-Q3)
+
+```{r}
+bio <- biomark %>% 
+  clean_biomark()
+```
+
+
+```{r}
+# exploring biomark types
+long_data <- bio_long(bio)
+bar_plot(long_data, "Type", "Total")
+```
+
+
+```{r}
+# exploring patient types
+bar_plot(bio %>% count(patient_type) , "patient_type", "n")
+```
+
+
+```{r}
+all <- left_join(ae_sl, bio, by = "SUBJID")
+                 
+# test if patient type is prognostic with respect to the death outcome
+chi_sq(all$DTH, all$patient_type)
+```
+
+
+```{r}
+# test if variables are predictive with respect to the death outcome
+dth_lm3 <- lm_model(all, DTH ~ -1 + ATRT + patient_type +  patient_type:ATRT)
+summary(dth_lm3)
+```
+
+
+```{r}
+dth_lm4 <- lm_model(all, 
+                    DTH ~ -1 + PRSURG + ATRT + AGE + RACE + B_METANM + 
+                      B_HEIGHT + patient_type +  patient_type:ATRT)
+summary(dth_lm4)
+```
+
+## Conclusion 
+
