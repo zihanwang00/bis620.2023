@@ -48,12 +48,19 @@ This is a basic example which shows you how to solve a common problem:
 
 ``` r
 library(bis620.2023)
-accel |> 
-  head(1000) |> 
-  plot_accel()
+adsl |>
+  swim_plot()
 ```
 
 <img src="man/figures/README-example-1.png" width="100%" />
+
+``` r
+
+adsl |>
+  cor_plot()
+```
+
+<img src="man/figures/README-example-2.png" width="100%" />
 
 ## Test Coverage Report
 
@@ -67,18 +74,16 @@ report()
 ``` r
 cov <- package_coverage()
 print(cov)
-#> bis620.2023 Coverage: 6.32%
-#> R/condition_hist.R: 0.00%
-#> R/count_id.R: 0.00%
-#> R/intervention.R: 0.00%
-#> R/map.R: 0.00%
-#> R/phase_hist.R: 0.00%
-#> R/pie.R: 0.00%
-#> R/query.R: 0.00%
-#> R/shiny.R: 0.00%
-#> R/trials.R: 0.00%
-#> R/word_cloud.R: 0.00%
+#> bis620.2023 Coverage: 95.38%
+#> R/chi_sq.R: 80.00%
 #> R/spectral.R: 85.71%
+#> R/bar.R: 100.00%
+#> R/bio_long.R: 100.00%
+#> R/clean_bio.R: 100.00%
+#> R/cor_plot.R: 100.00%
 #> R/hello.R: 100.00%
+#> R/lm_model.R: 100.00%
 #> R/plot.R: 100.00%
+#> R/swim_plot.R: 100.00%
+#> R/treat_hist.R: 100.00%
 ```
